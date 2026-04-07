@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard</title>
+  <link rel="stylesheet" href="/css/ownerdashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="shortcut icon" href="/images/icon.png" type="image/x-icon">
+
+  <style>
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      .main-content {
+        margin-left: 220px;
+        padding: 20px;
+      }
+      .inventory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 70%;
+        height: 100%;
+        background: #fff;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-top: 80px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        border-radius: 0;
+        transition: all 0.4s ease;
+        z-index: 999;
+      }
+
+      .sidebar.active {
+        left: 0;
+      }
+
+      .menu-toggle {
+        position: fixed;
+        top: 18px;
+        left: 20px;
+        font-size: 1.8rem;
+        color: #333;
+        cursor: pointer;
+        z-index: 1000;
+      }
+
+      .main-content {
+        margin-left: 0;
+        margin-top: 80px;
+        padding: 16px;
+        width: 100%;
+      }
+
+      .inventory-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        justify-items: center;
+        gap: 16px;
+      }
+
+      .product-card {
+        width: 100%;
+        max-width: 280px;
+      }
+
+      .product-detail-header {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .product-detail-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      .main-content {
+        margin-left: 220px;
+        padding: 20px;
+      }
+      .inventory-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+    }
+
+    .overlay {
+      display: none;
+    }
+
+    .overlay.active {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.3);
+      z-index: 998;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="menu-toggle">☰</div>
+
+  <div class="sidebar">
+    <div class="logo">
+      <img src="/images/log.jpeg" alt="Logo">
+    </div>
+
+    <nav>
+      <a href="/dashboard" class="nav-item"><i class="fas fa-chart-line"></i> Business Intelligence</a>
+      <a href="/BIexpiry" class="nav-item"><i class="fas fa-exclamation-triangle"></i> Stock Expiry</a>
+      <a href="/restocking" class="nav-item active"><i class="fas fa-truck"></i> Restocking Prediction</a>
+      <a href="/customer-pattern" class="nav-item"><i class="fas fa-users"></i> Customer Purchase Pattern</a>
+      <a href="/seasonal-demand" class="nav-item"><i class="fas fa-calendar-alt"></i> Seasonal Demand Forecasting</a>
+      <a href="/smart-recommendation" class="nav-item"><i class="fas fa-lightbulb"></i> Smart Recommendation</a>
+      <a href="/adminusers" class="nav-item"><i class="fas fa-user-cog"></i> User Management</a>
+      <a href="/owner-approvals" class="nav-item"><i class="fas fa-user-check"></i> Pending Approvals</a>
+    </nav>
+
+    <div class="logout">
+      <a href="{{ url_for('routes.logout') }}" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <h1 style="text-align: center; margin-bottom: 20px;">Restocking Prediction</h1>
+    <div style="text-align:center; margin: 10px 0 20px;">
+      <button onclick="generateRestockReport()" style="background:#138BA8;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;">
+        <i class="fas fa-file-pdf"></i> Generate Report
+      </button>
+    </div>
+
+    <iframe title="restock prediction" width="100%" height="1200" src="https://app.fabric.microsoft.com/view?r=eyJrIjoiYzc1NTU3NjItMzU3OC00MGU4LWI1NWMtMjIzYWJhYmM1MjBjIiwidCI6IjE3OTZiZTkwLWJhNTktNDJjOC05ZmQ0LWM4MTFlMjI5MTdmMyIsImMiOjl9" frameborder="0" allowFullScreen="true"></iframe>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.createElement('div');
+      overlay.classList.add('overlay');
+      document.body.appendChild(overlay);
+
+      menuToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+      });
+
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+    });
+
+    async function generateRestockReport() {
+      try {
+        const res = await fetch('/dss/report/restock');
+        const data = await res.json();
+        if (data.pdf_url) {
+          window.location.href = data.pdf_url;
+        } else {
+          alert(data.error || 'Failed to generate report');
+        }
+      } catch (e) {
+        alert('Error generating report');
+      }
+    }
+  </script>
+</body>
+</html>

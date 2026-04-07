@@ -1,0 +1,21 @@
+# ─────────────────────────────────────────────
+# docker-compose.yml – Local testing only
+# (Back4App does NOT use docker-compose)
+# ─────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    env_file:
+      - .env
+    volumes:
+      - ./logs:/app/logs
+      - ./receipts:/app/receipts
+      - ./customer_receipts:/app/customer_receipts
+      - ./reports:/app/reports
+      - ./images:/app/images
+    restart: unless-stopped

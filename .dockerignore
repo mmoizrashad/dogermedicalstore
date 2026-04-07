@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs (mounted at runtime)
+logs/
+*.log
+
+# Local env (secrets should be set as env vars in Back4App)
+.env
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Instance folder (Flask secret config)
+instance/

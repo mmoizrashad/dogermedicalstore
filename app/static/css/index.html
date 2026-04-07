@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Checkout - PharmaMastermind</title>
+    <link rel="shortcut icon" href="/images/icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/payment/style.css">
+    <link rel="stylesheet" href="/payment/card.css">
+    <link rel="stylesheet" href="/payment/orderSummary.css">
+    <link rel="stylesheet" href="/payment/paymentForm.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="header-brand">
+          <img src="/images/img.jpg" alt="PharmaMastermind" class="header-logo">
+          <div>
+            <h1>Complete Your Payment</h1>
+            <p>Fast payment processing with Stripe</p>
+          </div>
+        </div>
+        <a href="/customer" class="back-btn">
+          <i class="icon-arrow-left"></i>
+          Back to Shop
+        </a>
+      </header>
+
+
+          <form id="paymentForm" class="payment-form">
+            <div class="form-group">
+              <label for="cardElement">Card Details</label>
+              <div id="cardElement" class="card-element"></div>
+            </div>
+
+            <div class="payment-methods">
+              <h3>Payment Method</h3>
+              <div class="payment-options">
+                <label class="payment-option active">
+                  <input type="radio" name="paymentMethod" value="stripe" checked>
+                  <span class="checkmark"></span>
+                  <span>Credit/Debit Card</span>
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" class="pay-button">
+              <span>Pay Now</span>
+              <span class="button-icon">→</span>
+            </button>
+          </form>
+        </section>
+
+        <aside class="order-summary">
+          <h2>Order Summary</h2>
+          
+          <div class="order-items" id="orderItems">
+          
+          </div>
+          
+          <div class="order-totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <span id="subtotalAmount">Rs. 0.00</span>
+            </div>
+            <div class="total-row">
+              <span>Shipping</span>
+              <span>Rs. 0.00</span>
+            </div>
+            <div class="total-row">
+              <span>Tax</span>
+              <span>Rs. 0.00</span>
+            </div>
+            <div class="total-row grand-total">
+              <span>Total</span>
+              <span id="grandTotal">Rs. 0.00</span>
+            </div>
+          </div>
+          
+          <div class="secure-checkout">
+            
+            <p>Your payment info is secured with industry standard encryption</p>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <div class="success-icon"></div>
+        <h2>Payment Successful!</h2>
+        <p>Your payment was processed successfully. A confirmation receipt has been generated and your order has been saved to our system.</p>
+        <div class="order-details">
+          <p><strong>Order ID:</strong> <span id="orderIdDisplay"></span></p>
+          <p><strong>Amount Paid:</strong> <span id="amountPaidDisplay"></span></p>
+          <p><strong>Payment Method:</strong> Credit/Debit Card</p>
+        </div>
+        <div class="modal-buttons">
+          <button class="modal-button" id="downloadReceipt">Download Receipt</button>
+          <button class="modal-button secondary" id="continueShopping">Continue Shopping</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/payment/main.js"></script>
+  </body>
+</html>
