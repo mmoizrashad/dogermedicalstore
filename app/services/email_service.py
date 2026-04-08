@@ -3,9 +3,14 @@ import random
 import string
 import os
 import socket
+import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class EmailService:
     def __init__(self):
@@ -13,7 +18,14 @@ class EmailService:
         self.smtp_port = int(os.getenv('MAIL_PORT', '587'))
         self.email = os.getenv('MAIL_USERNAME')
         self.password = os.getenv('MAIL_PASSWORD')  
-        self.timeout = 10  # 10 second timeout to avoid Gunicorn worker timeout  
+        self.timeout = 10  # 10 second timeout to avoid Gunicorn worker timeout
+        
+        # Log configuration on init (without password)
+        logger.info(f"EmailService initialized - Server: {self.smtp_server}, Port: {self.smtp_port}, User: {self.email}")  
+        
+        # Validate SMTP configuration
+        if not self.smtp_server or not self.email or not self.password:
+            logger.warning("Invalid SMTP configuration. Please check environment variables.")
         
     def generate_verification_code(self):
         """Generate a 6-digit verification code"""
@@ -77,22 +89,40 @@ class EmailService:
             
             msg.attach(MIMEText(html_body, 'html'))
             
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=self.timeout)
-            server.starttls()
+            logger.info(f"Attempting to send verification email to {to_email}")
+            
+            # Use SSL for port 465, STARTTLS for port 587
+            if self.smtp_port == 465:
+                server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, timeout=self.timeout)
+            else:
+                server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=self.timeout)
+                server.starttls()
+            
+            logger.info(f"SMTP connection established to {self.smtp_server}:{self.smtp_port}")
+            
             server.login(self.email, self.password)
+            logger.info(f"SMTP login successful for {self.email}")
+            
             server.send_message(msg)
             server.quit()
             
+            logger.info(f"Verification email sent successfully to {to_email}")
             return True
             
         except socket.timeout:
-            print(f"SMTP connection timed out for {to_email}")
+            logger.error(f"SMTP connection timed out for {to_email} - Server: {self.smtp_server}:{self.smtp_port}")
+            return False
+        except smtplib.SMTPAuthenticationError as e:
+            logger.error(f"SMTP authentication failed for {self.email}: {str(e)}")
             return False
         except smtplib.SMTPException as e:
-            print(f"SMTP error sending verification email: {str(e)}")
+            logger.error(f"SMTP error sending verification email: {str(e)}")
+            return False
+        except socket.gaierror as e:
+            logger.error(f"DNS resolution failed for {self.smtp_server}: {str(e)}")
             return False
         except Exception as e:
-            print(f"Error sending verification email: {str(e)}")
+            logger.error(f"Error sending verification email to {to_email}: {type(e).__name__}: {str(e)}")
             return False
     
     def send_password_reset_email(self, to_email, user_name, reset_token):
@@ -157,20 +187,34 @@ class EmailService:
             
             msg.attach(MIMEText(html_body, 'html'))
             
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=self.timeout)
-            server.starttls()
+            logger.info(f"Attempting to send password reset email to {to_email}")
+            
+            # Use SSL for port 465, STARTTLS for port 587
+            if self.smtp_port == 465:
+                server = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, timeout=self.timeout)
+            else:
+                server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=self.timeout)
+                server.starttls()
+            
             server.login(self.email, self.password)
             server.send_message(msg)
             server.quit()
             
+            logger.info(f"Password reset email sent successfully to {to_email}")
             return True
             
         except socket.timeout:
-            print(f"SMTP connection timed out for {to_email}")
+            logger.error(f"SMTP connection timed out for {to_email}")
+            return False
+        except smtplib.SMTPAuthenticationError as e:
+            logger.error(f"SMTP authentication failed: {str(e)}")
             return False
         except smtplib.SMTPException as e:
-            print(f"SMTP error sending password reset email: {str(e)}")
+            logger.error(f"SMTP error sending password reset email: {str(e)}")
+            return False
+        except socket.gaierror as e:
+            logger.error(f"DNS resolution failed: {str(e)}")
             return False
         except Exception as e:
-            print(f"Error sending password reset email: {str(e)}")
+            logger.error(f"Error sending password reset email: {type(e).__name__}: {str(e)}")
             return False
