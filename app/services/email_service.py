@@ -2,6 +2,7 @@ import smtplib
 import random
 import string
 import os
+import socket
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
@@ -12,6 +13,7 @@ class EmailService:
         self.smtp_port = int(os.getenv('MAIL_PORT', '587'))
         self.email = os.getenv('MAIL_USERNAME')
         self.password = os.getenv('MAIL_PASSWORD')  
+        self.timeout = 10  # 10 second timeout to avoid Gunicorn worker timeout  
         
     def generate_verification_code(self):
         """Generate a 6-digit verification code"""
@@ -65,7 +67,7 @@ class EmailService:
                         <a href="/verification" class="btn">Verify Now</a>
                     </div>
                     <div class="footer">
-                        <p>© 2024 PharmaMastermind. All rights reserved.</p>
+                        <p> 2024 PharmaMastermind. All rights reserved.</p>
                         <p>Dogar Pharmacy, Bucha Chatta</p>
                     </div>
                 </div>
@@ -75,7 +77,7 @@ class EmailService:
             
             msg.attach(MIMEText(html_body, 'html'))
             
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=self.timeout)
             server.starttls()
             server.login(self.email, self.password)
             server.send_message(msg)
@@ -83,6 +85,12 @@ class EmailService:
             
             return True
             
+        except socket.timeout:
+            print(f"SMTP connection timed out for {to_email}")
+            return False
+        except smtplib.SMTPException as e:
+            print(f"SMTP error sending verification email: {str(e)}")
+            return False
         except Exception as e:
             print(f"Error sending verification email: {str(e)}")
             return False
@@ -139,7 +147,7 @@ class EmailService:
                         </div>
                     </div>
                     <div class="footer">
-                        <p>© 2024 PharmaMastermind. All rights reserved.</p>
+                        <p> 2024 PharmaMastermind. All rights reserved.</p>
                         <p>If you need help, contact us at support@pharmamaster.com</p>
                     </div>
                 </div>
@@ -149,7 +157,7 @@ class EmailService:
             
             msg.attach(MIMEText(html_body, 'html'))
             
-            server = smtplib.SMTP(self.smtp_server, self.smtp_port)
+            server = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=self.timeout)
             server.starttls()
             server.login(self.email, self.password)
             server.send_message(msg)
@@ -157,6 +165,12 @@ class EmailService:
             
             return True
             
+        except socket.timeout:
+            print(f"SMTP connection timed out for {to_email}")
+            return False
+        except smtplib.SMTPException as e:
+            print(f"SMTP error sending password reset email: {str(e)}")
+            return False
         except Exception as e:
             print(f"Error sending password reset email: {str(e)}")
             return False
