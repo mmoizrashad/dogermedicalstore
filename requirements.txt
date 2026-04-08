@@ -12,7 +12,10 @@ numpy==1.24.3
 bcrypt==4.0.1
 stripe==5.5.0
 statsmodels==0.14.0
-pygsp==0.5
+pygsp
+matplotlib
+numpy
+scipy
 ahpy==1.2
 Pillow==10.0.0
 pyDecision
