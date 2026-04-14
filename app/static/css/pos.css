@@ -349,7 +349,7 @@ body {
   background-color: white;
   padding: 0.8rem 1rem;
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   position: relative;
@@ -359,7 +359,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  justify-content: flex-start;   
+  justify-content: flex-start;
 }
 
 .logo-img {
@@ -410,17 +410,25 @@ body {
     border-radius: 0;
   }
 
-  .main-container {
-    display: flex;
+  /* Mobile Layout - Billing on Top, Products Below */
+  .container > .row {
     flex-direction: column;
   }
 
-  .product-section,
-  .billing-section {
+  .container > .row > .col-md-8,
+  .container > .row > .col-md-4 {
     width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
   }
 
-  .billing-section {
+  /* Billing section on top */
+  .container > .row > .col-md-4 {
+    order: -1;
+  }
+
+  .container > .row > .col-md-8 {
+    order: 1;
     margin-top: 1.5rem;
   }
 
@@ -433,8 +441,20 @@ body {
     padding: 0.5rem 1rem;
   }
 
+  /* Table responsive */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .table {
     font-size: 0.85rem;
+    min-width: 600px;
+  }
+
+  .table th, .table td {
+    padding: 0.5rem;
+    white-space: nowrap;
   }
 
   .table img {
@@ -442,7 +462,41 @@ body {
     height: 35px;
   }
 
+  /* Pagination mobile styles */
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    justify-content: center;
+  }
+
+  .pagination .page-item {
+    margin-bottom: 0.25rem;
+  }
+
+  .pagination .page-link {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  #posPaginationControls {
+    margin-top: 15px;
+    padding: 10px 0;
+  }
+
+  /* Billing summary mobile */
   .billing-summary {
     font-size: 0.9rem;
+    position: relative;
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+
+  .billing-summary .d-flex {
+    padding: 0.4rem 0;
+  }
+
+  .billing-summary .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
   }
 }

@@ -448,6 +448,39 @@ body {
     padding: 1rem;
   }
 
+  /* Mobile Layout - Billing on Top, Products Below */
+  .container > .row {
+    flex-direction: column;
+  }
+
+  .container > .row > .col-lg-8,
+  .container > .row > .col-lg-4 {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* Billing section on top */
+  .container > .row > .col-lg-4 {
+    order: -1;
+  }
+
+  .container > .row > .col-lg-8 {
+    order: 1;
+    margin-top: 1.5rem;
+  }
+
+  /* Hide category select on mobile */
+  .search-section .col-md-4 {
+    display: none;
+  }
+
+  .search-section .col-md-8 {
+    width: 100%;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
   .product-container {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
@@ -461,6 +494,33 @@ body {
   .payment-btn {
     font-size: 0.9rem;
     padding: 0.7rem;
+  }
+
+  /* Pagination mobile styles */
+  .pagination {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .pagination .page-item {
+    margin-bottom: 0.25rem;
+  }
+
+  .pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  /* Billing summary mobile */
+  .billing-summary {
+    position: relative;
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+
+  .billing-summary .d-flex {
+    padding: 0.5rem 0;
+    font-size: 1rem;
   }
 }
 
