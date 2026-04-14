@@ -1791,10 +1791,35 @@ def add_employee():
 def get_employees():
     try:
         cur = mysql.connection.cursor()
+
+        # Get employees from employees table
         cur.execute('SELECT * FROM employees')
         rows = cur.fetchall()
         col_names = [desc[0] for desc in cur.description]
         employees = [dict(zip(col_names, row)) for row in rows]
+
+        # Get users with role 'Employee' from users table (signup users)
+        cur.execute("SELECT id, username, first_name, last_name, email, role FROM users WHERE role = 'Employee'")
+        user_rows = cur.fetchall()
+
+        # Convert users to employee format
+        for user in user_rows:
+            user_id, username, first_name, last_name, email, role = user
+            # Check if this user is already in employees table (by email or username as employee_id)
+            exists = any(emp.get('email') == email or emp.get('employee_id') == username for emp in employees)
+            if not exists:
+                employees.append({
+                    'employee_id': username,
+                    'name': f"{first_name} {last_name}",
+                    'email': email,
+                    'phone': '-',
+                    'cnic': '-',
+                    'emergency': '-',
+                    'role': role,
+                    'salary': 0,
+                    'source': 'signup'  # Mark as signup user
+                })
+
         cur.close()
         return jsonify(employees)
     except Exception as e:
