@@ -1856,10 +1856,22 @@ def update_employee(emp_id):
 def delete_employee(emp_id):
     try:
         cur = mysql.connection.cursor()
+
+        # Try to delete from employees table first
         cur.execute("DELETE FROM employees WHERE employee_id = %s", (emp_id,))
+        deleted_from_employees = cur.rowcount > 0
+
+        # Also delete from users table (for signup employees)
+        cur.execute("DELETE FROM users WHERE username = %s AND role = 'Employee'", (emp_id,))
+        deleted_from_users = cur.rowcount > 0
+
         mysql.connection.commit()
         cur.close()
-        return jsonify({'status': 'success', 'message': 'Employee deleted successfully'})
+
+        if deleted_from_employees or deleted_from_users:
+            return jsonify({'status': 'success', 'message': 'Employee deleted successfully'})
+        else:
+            return jsonify({'status': 'error', 'message': 'Employee not found'}), 404
     except Exception as e:
         print("Delete error:", e)
         return jsonify({'status': 'error', 'message': str(e)}), 500
